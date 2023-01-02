@@ -55,7 +55,7 @@ Encore
         config.useBuiltIns = 'usage';
         config.corejs = '3.23';
     })
-
+	.enablePostCssLoader()
     // enables Sass/SCSS support
     //.enableSassLoader()
 

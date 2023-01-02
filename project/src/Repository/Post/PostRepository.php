@@ -3,8 +3,10 @@
 namespace App\Repository\Post;
 
 use App\Entity\Post\Post;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Knp\Component\Pager\PaginatorInterface;
+use Knp\Component\Pager\Pagination\PaginationInterface;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @extends ServiceEntityRepository<Post>
@@ -16,26 +18,31 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class PostRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(
+		ManagerRegistry $registry, 
+		private PaginatorInterface $paginator
+		)
     {
         parent::__construct($registry, Post::class);
     }
 
-    public function save(Post $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->persist($entity);
+	/**
+	 * Get published Posts
+	 * 
+	 * @param int page
+	 * @return  PaginationInterface
+	 */
+	public function findPublished(int $page): PaginationInterface
+	{
+		$data = $this->createQueryBuilder('p')
+			->where('p.state LIKE :state')
+			->setParameter('state', '%STATE_PUBLISHED%')
+			->orderBy('p.createdAt', 'DESC')
+			->getQuery()
+			->getResult();
 
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
+		$posts = $this->paginator->paginate($data,$page,9);
 
-    public function remove(Post $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->remove($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
+		return $posts;
+	}
 }
