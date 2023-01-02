@@ -5,10 +5,10 @@ namespace App\Entity\Post;
 use App\Entity\User;
 use Cocur\Slugify\Slugify;
 use Doctrine\ORM\Mapping as ORM;
-use App\Repository\Post\PostRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\JoinTable;
+use App\Repository\Post\PostRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
@@ -52,10 +52,11 @@ class Post
 
 	public function __construct()
 	{
-		$this->$updatedAt = new \DateTimeImmutable();
-		$this->$createdAt = new \DateTimeImmutable();
+        $this->updatedAt = new \DateTimeImmutable();
+        $this->createdAt = new \DateTimeImmutable();
 	}
 
+	#[ORM\PrePersist]
 	public function prePersist() 
 	{
 		$this->slug = (new Slugify())->slugify($this->title);
@@ -128,26 +129,28 @@ class Post
     }
 
 	public function getUpdatedAt(): \DateTimeImmutable
-	{
-		return $this->updatedAt;
-	}
+    {
+        return $this->updatedAt;
+    }
 
-	public function setUpdatedAt(\DateTimeImmutable $updatedAt): self
-	{
-		$this->updatedAt = $updatedAt;
-		return $this;
-	}
+    public function setUpdatedAt(\DateTimeImmutable $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
 
-	public function getCreatedAt(): \DateTimeImmutable
-	{
-		return $this->createdAt;
-	}
+        return $this;
+    }
 
-	public function setCreatedAt(\DateTimeImmutable $createdAt): self
-	{
-		$this->createdAt = $createdAt;
-		return $this;
-	}
+    public function getCreatedAt(): \DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
 
 	public function __toString()
 	{
